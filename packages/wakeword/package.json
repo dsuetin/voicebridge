@@ -1,0 +1,11 @@
+{
+  "name": "@voicebridge/wakeword",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./js/index.ts"
+  },
+  "scripts": {
+    "build": "wasm-pack build --target web --out-dir pkg"
+  }
+}

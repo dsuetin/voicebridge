@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# turbo
+.turbo/
+
+# build output
+dist/
+build/
+
+# wasm generated
+packages/*/pkg/
+
+# logs
+*.log
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
