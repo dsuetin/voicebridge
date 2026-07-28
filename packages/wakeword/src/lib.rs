@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
-mod dsp { pub mod mel; }
+mod dsp { pub mod mel; pub mod frame; }
 use dsp::mel::MelExtractor;
+use dsp::frame::FrameBuffer;
 
 const SAMPLE_RATE: usize = 16000;
 const BUFFER_SECONDS: usize = 5;
@@ -19,6 +20,8 @@ pub struct WakeWordEngine {
     last_rms: f32,
 
     mel: MelExtractor,
+
+    frame_buffer: FrameBuffer,
 }
 
 
@@ -35,7 +38,10 @@ impl WakeWordEngine {
             max_samples: SAMPLE_RATE * BUFFER_SECONDS,
             last_rms: 0.0,
             mel: MelExtractor::new(),
+            frame_buffer: FrameBuffer::new(512),
+            
         }
+
     }
 
 
@@ -60,26 +66,34 @@ impl WakeWordEngine {
         self.last_rms =
             calculate_rms(samples);
 
-        web_sys::console::log_1(
-            &format!(
-                "rms={:.4}",
-                self.last_rms
-            )
-            .into()
-        );
+        // web_sys::console::log_1(
+        //     &format!(
+        //         "rms={:.4}",
+        //         self.last_rms
+        //     )
+        //     .into()
+        // );
         if self.speech_detected() {
 
-            let features =
-                self.mel.extract(samples);
+            if let Some(frame) =
+                self.frame_buffer.push(samples)
+            {
+
+                let features =
+                    self.mel.extract(
+                        &frame
+                    );
 
 
-            web_sys::console::log_1(
-                &format!(
-                    "mel size={}",
-                    features.len()
-                )
-                .into()
-            );
+                web_sys::console::log_1(
+                    &format!(
+                        "mel size={} frame={}",
+                        features.len(),
+                        frame.len()
+                    )
+                    .into()
+                );
+            }
         }
 
         0.0

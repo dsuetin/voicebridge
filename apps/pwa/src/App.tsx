@@ -45,14 +45,14 @@ const startMic = async () => {
                 engine.process(data);
 
 
-            console.log(
-                "rms:",
-                engine.rms().toFixed(4),
-                "speech:",
-                engine.speech_detected(),
-                "buffer:",
-                engine.buffer_seconds().toFixed(2)
-            );
+            // console.log(
+            //     "rms:",
+            //     engine.rms().toFixed(4),
+            //     "speech:",
+            //     engine.speech_detected(),
+            //     "buffer:",
+            //     engine.buffer_seconds().toFixed(2)
+            // );
 
 
         }
