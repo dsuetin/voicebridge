@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { Microphone } from "./audio/microphone";
-import { RingBuffer } from "./audio/ring-buffer";
 import "./index.css";
 
 import init, {
@@ -23,95 +22,45 @@ function App() {
     useRef<Microphone | null>(null);
 
 
-  const ringBufferRef =
-    useRef<RingBuffer | null>(null);
-
-
-
-  const startMic = async () => {
-
-    console.log(
-      "Loading WASM..."
-    );
-    console.log("START");
+const startMic = async () => {
 
     await init();
-    console.log("WASM INIT OK");
+
 
     const engine =
-      new WakeWordEngine();
-    console.log(
-      "ENGINE CREATED",
-      engine
-    );
-
-    engineRef.current =
-      engine;
+        new WakeWordEngine();
 
 
-    console.log(
-      "WASM initialized"
-    );
+    engineRef.current = engine;
 
 
     const microphone =
-      new Microphone();
-
-
-    microphoneRef.current =
-      microphone;
-
-
-    const ringBuffer =
-      new RingBuffer(
-        16000 * 5
-      );
-
-
-    ringBufferRef.current =
-      ringBuffer;
-
+        new Microphone();
 
 
     await microphone.start(
-      (data) => {
+        (data) => {
+
+            const score =
+                engine.process(data);
 
 
-        //
-        // сохраняем последние 5 секунд
-        //
-        ringBuffer.push(data);
+            console.log(
+                "rms:",
+                engine.rms().toFixed(4),
+                "speech:",
+                engine.speech_detected(),
+                "buffer:",
+                engine.buffer_seconds().toFixed(2)
+            );
 
 
-
-        //
-        // отправляем в Rust WASM
-        //
-        const score =
-          engine.process(data);
-
-
-
-        console.log(
-          "score:",
-          score,
-          "buffer:",
-          ringBuffer.getSeconds(16000)
-        );
-
-
-        // console.log(
-        //   "processed:",
-        //   engine.processed_seconds(),
-        //   "sec"
-        // );
-
-      }
+        }
     );
 
 
     setMic(true);
-  };
+};
 
 
 
