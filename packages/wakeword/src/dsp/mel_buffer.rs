@@ -1,29 +1,31 @@
-use std::collections::VecDeque;
-
-
 pub struct MelBuffer {
 
-    frames: VecDeque<Vec<f32>>,
+    window: Vec<f32>,
+
+    mel_size: usize,
 
     max_frames: usize,
 
+    frames: usize,
 }
-
-
 
 impl MelBuffer {
 
 
     pub fn new(
         max_frames: usize,
+        mel_size: usize,
     ) -> Self {
 
         Self {
 
-            frames: VecDeque::new(),
+            window: vec![0.0; max_frames * mel_size],
+
+            mel_size,
 
             max_frames,
 
+            frames: 0,
         }
     }
 
@@ -34,75 +36,78 @@ impl MelBuffer {
         frame: Vec<f32>,
     ) {
 
+        debug_assert_eq!(
+            frame.len(),
+            self.mel_size
+        );
 
-        self.frames
-            .push_back(frame);
+        if self.frames < self.max_frames {
 
+            let start =
+                self.frames * self.mel_size;
 
+            self.window[
+                start..
+                start + self.mel_size
+            ]
+                .copy_from_slice(&frame);
 
-        while self.frames.len()
-            > self.max_frames
-        {
+            self.frames += 1;
 
-            self.frames
-                .pop_front();
-
+            return;
         }
+
+
+        self.window.copy_within(
+            self.mel_size..,
+            0,
+        );
+
+
+        let start =
+            (self.max_frames - 1)
+                * self.mel_size;
+
+        self.window[
+            start..
+            start + self.mel_size
+        ]
+            .copy_from_slice(&frame);
     }
 
 
-
     pub fn is_ready(
-        &self
+        &self,
     ) -> bool {
 
-        self.frames.len()
+        self.frames
             >= self.max_frames
 
     }
 
+    pub fn window(
+        &self,
+    ) -> &[f32] {
 
-
-    pub fn len(
-        &self
-    ) -> usize {
-
-        self.frames.len()
+        &self.window
 
     }
 
+    pub fn len(
+        &self,
+    ) -> usize {
 
-
-    pub fn get_window(
-        &self
-    ) -> Vec<f32> {
-
-
-        let mut result =
-            Vec::new();
-
-
-
-        for frame in &self.frames {
-
-            result.extend_from_slice(
-                frame
-            );
-
-        }
-
-
-        result
+        self.frames
 
     }
 
 
 
     pub fn clear(
-        &mut self
+        &mut self,
     ) {
 
-        self.frames.clear();
+        self.frames = 0;
 
     }
 
