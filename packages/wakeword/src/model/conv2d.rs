@@ -171,7 +171,7 @@ mod tests {
 
         let input =
             Tensor::new(
-                49,
+                100,
                 40,
                 1,
             );

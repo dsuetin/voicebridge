@@ -27,8 +27,8 @@ impl FeatureExtractor {
 
             mel: MelExtractor::new(),
 
-            // 49 кадров ≈ 490 ms
-            mel_buffer: MelBuffer::new(49, 40),
+            // 100 кадров ≈ 1000 ms
+            mel_buffer: MelBuffer::new(100, 40),
         }
     }
 
@@ -101,13 +101,13 @@ impl FeatureExtractor {
 
         let mut tensor =
             Tensor::new(
-                49,
+                100,
                 40,
                 1,
             );
 
 
-        for y in 0..49 {
+        for y in 0..100 {
 
             for x in 0..40 {
 
