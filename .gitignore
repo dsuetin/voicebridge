@@ -22,5 +22,5 @@ packages/*/pkg/
 .vscode/
 .idea/
 training/.venv
-training/live_records_16k/*
+training/audio/negative/*
 *.ogg
