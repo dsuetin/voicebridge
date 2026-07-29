@@ -1,3 +1,5 @@
+use crate::model::tensor::Tensor;
+
 pub struct MelBuffer {
 
     window: Vec<f32>,
@@ -101,8 +103,6 @@ impl MelBuffer {
 
     }
 
-
-
     pub fn clear(
         &mut self,
     ) {
@@ -111,4 +111,45 @@ impl MelBuffer {
 
     }
 
+    pub fn to_tensor(
+        &self
+    ) -> Tensor {
+
+
+        let mut tensor =
+            Tensor::new(
+                self.max_frames,
+                self.mel_size,
+                1,
+            );
+
+
+        for y in 0..self.max_frames {
+
+
+            for x in 0..self.mel_size {
+
+
+                let index =
+                    y * self.mel_size + x;
+
+
+                let value =
+                    self.window[index];
+
+
+                tensor.set(
+                    y,
+                    x,
+                    0,
+                    value,
+                );
+
+            }
+        }
+
+
+        tensor
+
+    }
 }

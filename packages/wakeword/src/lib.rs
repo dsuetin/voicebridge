@@ -8,9 +8,20 @@ mod dsp {
 }
 mod model {
     pub mod tensor;
+    pub mod conv2d;
+    pub mod relu;
+    pub mod maxpool;
+    pub mod network;
+    pub mod flatten;
+    pub mod linear;
+    pub mod sigmoid;
+    pub mod global_avg_pool;
+    pub mod classifier;
+    pub mod model;
+    pub mod weights;
 }
 use dsp::extractor::FeatureExtractor;
-
+use crate::model::model::WakeWordModel;
 const RMS_THRESHOLD: f32 = 0.015;
 
 #[wasm_bindgen]
@@ -19,6 +30,8 @@ pub struct WakeWordEngine {
     last_rms: f32,
 
     extractor: FeatureExtractor,
+
+    model: WakeWordModel,
 
     detected: bool,
 }
@@ -34,6 +47,8 @@ impl WakeWordEngine {
             last_rms: 0.0,
 
             extractor: FeatureExtractor::new(),
+
+            model: WakeWordModel::new(),
 
             detected: false,
         }
@@ -66,13 +81,35 @@ impl WakeWordEngine {
                 .into()
             );
 
+            let tensor =
+                self.extractor
+                    .to_tensor();
 
-            //
-            // временная заглушка
-            //
-            self.detected = true;
+
+            let score =
+                self.model
+                    .predict(
+                        &tensor
+                    );
+
+
+            web_sys::console::log_1(
+                &format!(
+                    "wake score={:.4}",
+                    score
+                )
+                .into()
+            );
+
+
+
+            if score > 0.85 {
+
+                self.detected = true;
+
+            }
+
         }
-
 
         self.last_rms
     }

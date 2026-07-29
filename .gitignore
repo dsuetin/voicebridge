@@ -21,3 +21,5 @@ packages/*/pkg/
 # IDE
 .vscode/
 .idea/
+training/.venv
+*.ogg

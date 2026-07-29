@@ -1,6 +1,7 @@
 use super::frame::FrameBuffer;
 use super::mel::MelExtractor;
 use super::mel_buffer::MelBuffer;
+use crate::model::tensor::Tensor;
 
 pub struct FeatureExtractor {
 
@@ -86,6 +87,48 @@ impl FeatureExtractor {
 
         self.mel_buffer.clear();
 
+    }
+
+    pub fn to_tensor(
+        &self
+    ) -> Tensor {
+
+
+        let window =
+            self.window();
+
+
+
+        let mut tensor =
+            Tensor::new(
+                49,
+                40,
+                1,
+            );
+
+
+        for y in 0..49 {
+
+            for x in 0..40 {
+
+
+                let index =
+                    y * 40 + x;
+
+
+                tensor.set(
+                    y,
+                    x,
+                    0,
+                    window[index],
+                );
+
+            }
+
+        }
+
+
+        tensor
     }
 
 }
